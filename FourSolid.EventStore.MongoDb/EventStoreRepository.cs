@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FourSolid.CommonDomain;
@@ -15,6 +16,8 @@ namespace FourSolid.EventStore.MongoDb
         private readonly string _eventClrTypeHeader;        // "FourSolidEventName";
         private readonly string _aggregateClrTypeHeader;    // "FourSolidAggregateName";
 
+        private const string CommitIdHeader = "CommitId";
+        private Func<Type, Guid, string> _aggregateIdToStreamName;
         private static readonly JsonSerializerSettings SerializerSettings;
 
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : class, IAggregate
@@ -33,12 +36,26 @@ namespace FourSolid.EventStore.MongoDb
 
         public async Task SaveAsync(IAggregate aggregate, Guid commitId, Action<IDictionary<string, object>> updateHeaders)
         {
-            await this.SaveAsync(aggregate, commitId, d => { });
+            var commitHeaders = new Dictionary<string, object>
+            {
+                { CommitIdHeader, commitId },
+                { this._aggregateClrTypeHeader, aggregate.GetType().AssemblyQualifiedName }
+            };
+            updateHeaders(commitHeaders);
+
+            var streamName = this._aggregateIdToStreamName(aggregate.GetType(), aggregate.Id);
+            var newEvents = aggregate.GetUncommittedEvents().Cast<object>().ToList();
+            var originalVersion = aggregate.Version - newEvents.Count;
+            var expectedVersion = originalVersion == 0 ? ExpectedVersion.NoStream : originalVersion - 1;
+            var eventsToSave = newEvents.Select(e => ToEventData(Guid.NewGuid(), e, commitHeaders)).ToList();
+
+
+            aggregate.ClearUncommittedEvents();
         }
 
-        public Task SaveAsync(IAggregate aggregate, Guid commitId)
+        public async Task SaveAsync(IAggregate aggregate, Guid commitId)
         {
-            throw new NotImplementedException();
+            await this.SaveAsync(aggregate, commitId, d => { });
         }
 
         #region Helpers
