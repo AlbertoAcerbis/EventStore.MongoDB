@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FourSolid.EventStore.MongoDb.Persistence\FourSolid.EventStore.MongoDb.Persistence.csproj" />
+    <ProjectReference Include="..\FourSolid.EventStore.Shared\FourSolid.EventStore.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\" />
+    <Folder Include="Abstracts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FourSolid.CommonDomain" Version="1.0.0" />
+  </ItemGroup>
+
+</Project>

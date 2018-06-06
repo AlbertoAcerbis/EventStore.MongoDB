@@ -3,7 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FourSolid.EventStore.MongoDb", "FourSolid.EventStore.MongoDb\FourSolid.EventStore.MongoDb.csproj", "{D00C4DCD-93A4-4F97-952F-018F1988B8DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FourSolid.EventStore.MongoDb", "FourSolid.EventStore.MongoDb\FourSolid.EventStore.MongoDb.csproj", "{D00C4DCD-93A4-4F97-952F-018F1988B8DA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "10 Core", "10 Core", "{9BB458F5-70A6-4B46-BA55-E2EABD6E5E1F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "40 Persistence", "40 Persistence", "{11EC48B9-9A1C-44A7-8366-BE19400AAA27}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FourSolid.EventStore.MongoDb.Persistence", "FourSolid.EventStore.MongoDb.Persistence\FourSolid.EventStore.MongoDb.Persistence.csproj", "{85C595DD-1AE5-43A1-866B-4EE5CC85D0C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FourSolid.EventStore.Shared", "FourSolid.EventStore.Shared\FourSolid.EventStore.Shared.csproj", "{2A1625D8-3869-4D22-B46F-DE0920FE4404}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "20 Infrastructures", "20 Infrastructures", "{99D2EFAD-9A51-466A-A8E5-C7256214A022}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FourSolid.EventStore.MongoDb.Mediator", "FourSolid.EventStore.MongoDb.Mediator\FourSolid.EventStore.MongoDb.Mediator.csproj", "{380A7DA0-195C-4907-8335-55EC57E92375}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "999 Tests", "999 Tests", "{713E2B15-F670-467E-BD08-7BC65235BBC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{6422FD7E-9F11-4949-8DBE-CE5C2D5FE533}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FourSolid.EventStore.TestApp", "FourSolid.EventStore.TestApp\FourSolid.EventStore.TestApp.csproj", "{74A07053-C43D-4396-8063-4990D82B6668}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +33,33 @@ Global
 		{D00C4DCD-93A4-4F97-952F-018F1988B8DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D00C4DCD-93A4-4F97-952F-018F1988B8DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D00C4DCD-93A4-4F97-952F-018F1988B8DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85C595DD-1AE5-43A1-866B-4EE5CC85D0C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85C595DD-1AE5-43A1-866B-4EE5CC85D0C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85C595DD-1AE5-43A1-866B-4EE5CC85D0C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85C595DD-1AE5-43A1-866B-4EE5CC85D0C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A1625D8-3869-4D22-B46F-DE0920FE4404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A1625D8-3869-4D22-B46F-DE0920FE4404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A1625D8-3869-4D22-B46F-DE0920FE4404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A1625D8-3869-4D22-B46F-DE0920FE4404}.Release|Any CPU.Build.0 = Release|Any CPU
+		{380A7DA0-195C-4907-8335-55EC57E92375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{380A7DA0-195C-4907-8335-55EC57E92375}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{380A7DA0-195C-4907-8335-55EC57E92375}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{380A7DA0-195C-4907-8335-55EC57E92375}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74A07053-C43D-4396-8063-4990D82B6668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74A07053-C43D-4396-8063-4990D82B6668}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74A07053-C43D-4396-8063-4990D82B6668}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74A07053-C43D-4396-8063-4990D82B6668}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D00C4DCD-93A4-4F97-952F-018F1988B8DA} = {9BB458F5-70A6-4B46-BA55-E2EABD6E5E1F}
+		{85C595DD-1AE5-43A1-866B-4EE5CC85D0C3} = {11EC48B9-9A1C-44A7-8366-BE19400AAA27}
+		{2A1625D8-3869-4D22-B46F-DE0920FE4404} = {11EC48B9-9A1C-44A7-8366-BE19400AAA27}
+		{380A7DA0-195C-4907-8335-55EC57E92375} = {99D2EFAD-9A51-466A-A8E5-C7256214A022}
+		{6422FD7E-9F11-4949-8DBE-CE5C2D5FE533} = {713E2B15-F670-467E-BD08-7BC65235BBC8}
+		{74A07053-C43D-4396-8063-4990D82B6668} = {6422FD7E-9F11-4949-8DBE-CE5C2D5FE533}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F7B7693C-D8C0-49BD-8273-611F0135D648}

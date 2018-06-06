@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using FourSolid.CommonDomain;
 using FourSolid.CommonDomain.Persistence;
-using FourSolid.EventStore.MongoDb.Models;
+using FourSolid.EventStore.Shared.Abstracts;
+using FourSolid.EventStore.Shared.Configuration;
+using FourSolid.EventStore.Shared.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,22 +18,61 @@ namespace FourSolid.EventStore.MongoDb
         private readonly string _eventClrTypeHeader;        // "FourSolidEventName";
         private readonly string _aggregateClrTypeHeader;    // "FourSolidAggregateName";
 
+        private const int WritePageSize = 500;
+        private const int ReadPageSize = 500;
         private const string CommitIdHeader = "CommitId";
-        private Func<Type, Guid, string> _aggregateIdToStreamName;
+
+        private readonly Func<Type, Guid, string> _aggregateIdToStreamName;
         private static readonly JsonSerializerSettings SerializerSettings;
+
+        private readonly IEventDataFactory _eventDataFactory;
+
+        static EventStoreRepository()
+        {
+            SerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None };
+        }
+
+        public EventStoreRepository(EventStoreConfiguration eventStoreConfiguration, IEventDataFactory eventDataFactory)
+            : this((t, g) => $"{char.ToLower(t.Name[0])}{t.Name.Substring(1)}Events-{g}")
+        {
+            this._eventClrTypeHeader = eventStoreConfiguration.EventTypeHeader;
+            this._aggregateClrTypeHeader = eventStoreConfiguration.AggregateTypeHeader;
+
+            this._eventDataFactory = eventDataFactory;
+        }
+
+        public EventStoreRepository(Func<Type, Guid, string> aggregateIdToStreamName)
+        {
+            this._aggregateIdToStreamName = aggregateIdToStreamName;
+        }
 
         public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id) where TAggregate : class, IAggregate
         {
             return await GetByIdAsync<TAggregate>(id, int.MaxValue);
         }
 
-        public Task<TAggregate> GetByIdAsync<TAggregate>(Guid id, int version) where TAggregate : class, IAggregate
+        public async Task<TAggregate> GetByIdAsync<TAggregate>(Guid id, int version) where TAggregate : class, IAggregate
         {
             if (version <= 0)
                 throw new InvalidOperationException("Cannot get version <= 0");
 
-            //var streamName = this._aggregateIdToStreamName(typeof(TAggregate), id);
-            //var aggregate = ConstructAggregate<TAggregate>();
+            var streamName = this._aggregateIdToStreamName(typeof(TAggregate), id);
+            var aggregate = ConstructAggregate<TAggregate>();
+            var sliceStart = 0;
+            var sliceCount = sliceStart + ReadPageSize <= version ? ReadPageSize : version - sliceStart + 1;
+
+            var eventsCollection =
+                await this._eventDataFactory.ReadStreamEventsForwardAsync(id, sliceStart, sliceCount);
+
+            foreach (var evnt in eventsCollection)
+            {
+                var eventToApply = DeserializeEvent(evnt.Metadata, evnt.Data);
+                if (eventToApply == null)
+                    continue;
+                aggregate.ApplyEvent(eventToApply);
+            }
+
+            return aggregate;
         }
 
         public async Task SaveAsync(IAggregate aggregate, Guid commitId, Action<IDictionary<string, object>> updateHeaders)
@@ -49,6 +90,14 @@ namespace FourSolid.EventStore.MongoDb
             var expectedVersion = originalVersion == 0 ? ExpectedVersion.NoStream : originalVersion - 1;
             var eventsToSave = newEvents.Select(e => ToEventData(Guid.NewGuid(), e, commitHeaders)).ToList();
 
+            if (eventsToSave.Count < WritePageSize)
+            {
+                await this._eventDataFactory.AppendToStreamAsync(aggregate, expectedVersion, eventsToSave);
+            }
+            else
+            {
+                //TODO
+            }
 
             aggregate.ClearUncommittedEvents();
         }

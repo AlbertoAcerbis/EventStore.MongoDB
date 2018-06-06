@@ -1,4 +1,4 @@
-﻿namespace FourSolid.EventStore.MongoDb.Models
+﻿namespace FourSolid.EventStore.Shared.Models
 {
     public static class ExpectedVersion
     {

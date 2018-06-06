@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FourSolid.EventStore.MongoDb.Models
+namespace FourSolid.EventStore.Shared.Models
 {
     public sealed class EventData
     {

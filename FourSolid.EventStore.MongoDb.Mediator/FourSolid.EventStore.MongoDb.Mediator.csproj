@@ -5,10 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FourSolid.CommonDomain" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\FourSolid.EventStore.MongoDb.Persistence\FourSolid.EventStore.MongoDb.Persistence.csproj" />
     <ProjectReference Include="..\FourSolid.EventStore.Shared\FourSolid.EventStore.Shared.csproj" />
   </ItemGroup>
 

@@ -6,10 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="FourSolid.CommonDomain" Version="1.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\FourSolid.EventStore.Shared\FourSolid.EventStore.Shared.csproj" />
+    <PackageReference Include="MongoDB.Driver" Version="2.6.1" />
+    <PackageReference Include="MongoDB.Driver.Core" Version="2.6.1" />
   </ItemGroup>
 
 </Project>
