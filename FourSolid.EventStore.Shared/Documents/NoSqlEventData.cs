@@ -8,6 +8,8 @@ namespace FourSolid.EventStore.Shared.Documents
 {
     public class NoSqlEventData : DocumentEntity
     {
+        public string AggregateType { get; private set; }
+        public string StreamName { get; private set; }
         public IEnumerable<NoSqlEvent> EventStream { get; private set; }
 
         protected NoSqlEventData()
@@ -23,6 +25,8 @@ namespace FourSolid.EventStore.Shared.Documents
         private NoSqlEventData(IAggregate aggregate)
         {
             this.Id = aggregate.Id.ToString();
+            this.AggregateType = $"{aggregate.GetType().Name}";
+            this.StreamName = $"{char.ToLower(aggregate.GetType().Name[0])}{aggregate.GetType().Name.Substring(1)}Events-{aggregate.Id}";
             this.EventStream = Enumerable.Empty<NoSqlEvent>();
         }
         #endregion

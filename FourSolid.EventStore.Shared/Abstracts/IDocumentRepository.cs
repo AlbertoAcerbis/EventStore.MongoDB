@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FourSolid.CommonDomain;
 using MongoDB.Driver;
 
 namespace FourSolid.EventStore.Shared.Abstracts

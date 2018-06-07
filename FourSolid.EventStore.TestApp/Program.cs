@@ -2,6 +2,7 @@
 using FourSolid.EventStore.MongoDb;
 using FourSolid.EventStore.MongoDb.Persistence.Factory;
 using FourSolid.EventStore.Shared.Configuration;
+using FourSolid.EventStore.TestApp.Entities;
 
 namespace FourSolid.EventStore.TestApp
 {
@@ -20,7 +21,17 @@ namespace FourSolid.EventStore.TestApp
 
             var eventStoreRepository = new EventStoreRepository(eventStoreConfiguration, eventDataFactory);
 
-            //eventStoreRepository.SaveAsync()
+            var deviceGuid = Guid.NewGuid();
+            var device = Device.CreateDevice(deviceGuid, "AB1234DE", "AB1234DE", DateTime.UtcNow);
+            eventStoreRepository.SaveAsync(device, Guid.NewGuid(), d => { }).GetAwaiter().GetResult();
+
+            device = eventStoreRepository.GetByIdAsync<Device>(deviceGuid).GetAwaiter().GetResult();
+            device.UpdateSerialNumber("BC2345EF");
+            eventStoreRepository.SaveAsync(device, Guid.NewGuid(), d => { }).GetAwaiter().GetResult();
+
+            Console.WriteLine($"Device Id: {device.Id}");
+            Console.WriteLine($"Serial Number: {device.GetSerialNumber()}");
+            Console.ReadLine();
         }
     }
 }

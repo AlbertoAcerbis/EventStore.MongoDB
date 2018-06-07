@@ -53,6 +53,8 @@ namespace FourSolid.EventStore.MongoDb.Persistence.Factory
                 {
                     noSqlAggregate.AppendEvent(eventData);
                 }
+
+                await this._documentUnitOfWork.NoSqlEventDataRepository.ReplaceOneAsync(filter, noSqlAggregate);
             }
             catch (Exception ex)
             {
@@ -65,7 +67,17 @@ namespace FourSolid.EventStore.MongoDb.Persistence.Factory
         {
             try
             {
-                throw new NotImplementedException();
+                var filter = Builders<NoSqlEventData>.Filter.Eq("_id", aggregateId.ToString());
+                var documentsResult = await this._documentUnitOfWork.NoSqlEventDataRepository.FindAsync(filter);
+
+                if (!documentsResult.Any())
+                    return Enumerable.Empty<EventData>();
+
+                var noSqlEventData = documentsResult.First();
+
+                return noSqlEventData.EventStream.Any()
+                    ? noSqlEventData.EventStream.Select(noSqlEvent => noSqlEvent.ToEventData())
+                    : Enumerable.Empty<EventData>();
             }
             catch (Exception ex)
             {

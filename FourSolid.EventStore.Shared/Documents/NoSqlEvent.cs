@@ -1,4 +1,7 @@
-﻿namespace FourSolid.EventStore.Shared.Documents
+﻿using System;
+using FourSolid.EventStore.Shared.Models;
+
+namespace FourSolid.EventStore.Shared.Documents
 {
     public class NoSqlEvent
     {
@@ -24,6 +27,12 @@
             this.IsJson = isJson;
             this.Data = data;
             this.Metadata = metadata;
+        }
+
+        public EventData ToEventData()
+        {
+            Guid.TryParse(this.EventId, out var eventGuid);
+            return new EventData(eventGuid, this.Type, this.IsJson, this.Data, this.Metadata);
         }
     }
 }
