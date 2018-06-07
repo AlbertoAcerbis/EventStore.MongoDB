@@ -10,23 +10,25 @@ namespace FourSolid.EventStore.Shared.Documents
         public bool IsJson { get; private set; }
         public byte[] Data { get; private set; }
         public byte[] Metadata { get; private set; }
+        public long CommitPosition { get; private set; }
 
         protected NoSqlEvent()
         { }
 
         public static NoSqlEvent CreateNoSqlEvent(string eventId, string type, bool isJson, byte[] data,
-            byte[] metadata)
+            byte[] metadata, long commitPosition)
         {
-            return new NoSqlEvent(eventId, type, isJson, data, metadata);
+            return new NoSqlEvent(eventId, type, isJson, data, metadata, commitPosition);
         }
 
-        private NoSqlEvent(string eventId, string type, bool isJson, byte[] data, byte[] metadata)
+        private NoSqlEvent(string eventId, string type, bool isJson, byte[] data, byte[] metadata, long commitPosition)
         {
             this.EventId = eventId;
             this.Type = type;
             this.IsJson = isJson;
             this.Data = data;
             this.Metadata = metadata;
+            this.CommitPosition = commitPosition;
         }
 
         public EventData ToEventData()

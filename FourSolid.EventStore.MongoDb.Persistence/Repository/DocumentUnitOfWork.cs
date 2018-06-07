@@ -21,6 +21,11 @@ namespace FourSolid.EventStore.MongoDb.Persistence.Repository
             this._noSqlEventDataRepository ??
             (this._noSqlEventDataRepository = new DocumentRepository<NoSqlEventData>(this._eventStoreConfiguration));
 
+        private IDocumentRepository<NoSqlPosition> _noSqlPositionRepository;
+        public IDocumentRepository<NoSqlPosition> NoSqlPositionRepository =>
+            this._noSqlPositionRepository ?? (this._noSqlPositionRepository =
+                new DocumentRepository<NoSqlPosition>(this._eventStoreConfiguration));
+
         #region Dispose
         private bool _disposed; // To detect redundant calls
 

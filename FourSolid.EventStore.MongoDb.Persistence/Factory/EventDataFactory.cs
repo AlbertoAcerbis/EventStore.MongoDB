@@ -9,6 +9,7 @@ using FourSolid.EventStore.Shared.Abstracts;
 using FourSolid.EventStore.Shared.Configuration;
 using FourSolid.EventStore.Shared.Documents;
 using FourSolid.EventStore.Shared.Models;
+using FourSolid.EventStore.Shared.Services;
 using MongoDB.Driver;
 
 namespace FourSolid.EventStore.MongoDb.Persistence.Factory
@@ -51,15 +52,17 @@ namespace FourSolid.EventStore.MongoDb.Persistence.Factory
                 var eventDatas = events as EventData[] ?? events.ToArray();
                 foreach (var eventData in eventDatas)
                 {
-                    noSqlAggregate.AppendEvent(eventData);
+                    var commitPosition = await this.GetLastPositionAsync();
+                    commitPosition.IncrementCommitPosition();
+                    await this.SavePositionAsync(commitPosition);
+                    noSqlAggregate.AppendEvent(eventData, commitPosition);
                 }
 
                 await this._documentUnitOfWork.NoSqlEventDataRepository.ReplaceOneAsync(filter, noSqlAggregate);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                throw;
+                throw new Exception(CommonServices.GetErrorMessage(ex));
             }
         }
 
@@ -81,10 +84,54 @@ namespace FourSolid.EventStore.MongoDb.Persistence.Factory
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                throw;
+                throw new Exception(CommonServices.GetErrorMessage(ex));
             }
         }
+
+        #region Position
+        public async Task<EventPosition> GetLastPositionAsync()
+        {
+            try
+            {
+                var filter = Builders<NoSqlPosition>.Filter.Empty;
+                var documentsResult = await this._documentUnitOfWork.NoSqlPositionRepository.FindAsync(filter);
+
+                return documentsResult.Any()
+                    ? new EventPosition(documentsResult.First().CommitPosition)
+                    : new EventPosition(0);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(CommonServices.GetErrorMessage(ex));
+            }
+        }
+
+        public async Task SavePositionAsync(EventPosition commitPosition)
+        {
+            try
+            {
+                var filter = Builders<NoSqlPosition>.Filter.Empty;
+                var documentsResult = await this._documentUnitOfWork.NoSqlPositionRepository.FindAsync(filter);
+
+                if (!documentsResult.Any())
+                {
+                    var noSqlDocument = NoSqlPosition.CreateNoSqlPosition(commitPosition.CommitPosition);
+                    await this._documentUnitOfWork.NoSqlPositionRepository.InsertOneAsync(noSqlDocument);
+                }
+                else
+                {
+                    var noSqlDocument = documentsResult.First();
+                    var updateCommand = noSqlDocument.UpdatePosition(commitPosition.CommitPosition);
+                    var filterUpdate = Builders<NoSqlPosition>.Filter.Eq("_id", noSqlDocument.Id);
+                    await this._documentUnitOfWork.NoSqlPositionRepository.UpdateOneAsync(filterUpdate, updateCommand);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(CommonServices.GetErrorMessage(ex));
+            }
+        }
+        #endregion
 
         #region Dispose
         private bool _disposed; // To detect redundant calls

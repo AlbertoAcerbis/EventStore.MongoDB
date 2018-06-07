@@ -31,11 +31,11 @@ namespace FourSolid.EventStore.Shared.Documents
         }
         #endregion
 
-        public void AppendEvent(EventData eventData)
+        public void AppendEvent(EventData eventData, EventPosition commitPosition)
         {
             NoSqlEvent[] eventToAdd =
             {
-                NoSqlEvent.CreateNoSqlEvent(eventData.EventId.ToString(), eventData.Type, eventData.IsJson, eventData.Data, eventData.Metadata)
+                NoSqlEvent.CreateNoSqlEvent(eventData.EventId.ToString(), eventData.Type, eventData.IsJson, eventData.Data, eventData.Metadata, commitPosition.CommitPosition)
             };
             this.EventStream = this.EventStream.Concat(eventToAdd);
         }
