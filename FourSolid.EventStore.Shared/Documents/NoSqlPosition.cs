@@ -1,4 +1,5 @@
-﻿using FourSolid.EventStore.Shared.Abstracts;
+﻿using System;
+using FourSolid.EventStore.Shared.Abstracts;
 using MongoDB.Driver;
 
 namespace FourSolid.EventStore.Shared.Documents
@@ -18,6 +19,7 @@ namespace FourSolid.EventStore.Shared.Documents
 
         private NoSqlPosition(long commitPosition)
         {
+            this.Id = Guid.NewGuid().ToString();
             this.CommitPosition = commitPosition;
         }
         #endregion
